@@ -1,49 +1,40 @@
 package com.example.mlbscores.app
 
+import android.app.DatePickerDialog
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
+import android.widget.DatePicker
+import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
-import com.example.mlbscores.app.model.Event
-import com.example.mlbscores.databinding.ActivityMainBinding
-import com.example.mlbscores.app.model.Scoreboard
-import dagger.hilt.EntryPoint
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import retrofit2.HttpException
-import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.*
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private val viewModel: MainViewModel by viewModels()
 
-    private lateinit var binding: ActivityMainBinding
-    private var scoreboard: Scoreboard? = null
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-        viewModel.getScores()
-        binding.composeView.setContent {
+        viewModel.init()
+        setContent {
             Screen()
         }
     }
@@ -54,7 +45,13 @@ class MainActivity : AppCompatActivity() {
 fun Screen() {
     val viewModel: MainViewModel = viewModel()
     val scoreboard = viewModel.scoreboard.observeAsState()
+    val date = viewModel.date.observeAsState()
+
     LazyColumn {
+        item {
+            DatePicker(date.value ?: Date())
+        }
+
         val events = scoreboard.value?.events
         items(events.orEmpty()) { event ->
             val logo1 = event.competitions[0].competitors[0].team.logo
@@ -69,7 +66,7 @@ fun Screen() {
                         .padding(4.dp)
                 )
 
-                Row{
+                Row {
                     Image(
                         painter = rememberAsyncImagePainter(logo1),
                         contentDescription = null,
@@ -84,4 +81,27 @@ fun Screen() {
             }
         }
     }
+}
+
+@Composable
+fun DatePicker(date: Date) {
+    val mContext = LocalContext.current
+    val viewModel: MainViewModel = viewModel()
+
+    val mDatePickerDialog = date.let {
+        DatePickerDialog(
+            mContext,
+            { _: DatePicker, mYear: Int, mMonth: Int, mDayOfMonth: Int ->
+                viewModel.setDate(Date(mYear - 1900, mMonth, mDayOfMonth))
+            }, it.year + 1900, it.month, it.date
+        )
+    }
+
+    val mDate = SimpleDateFormat("yyyyMMdd").format(date)
+    Button(onClick = {
+        mDatePickerDialog?.show()
+    }, colors = ButtonDefaults.buttonColors(backgroundColor = Color(0XFF0F9D58))) {
+        Text(text = mDate, color = Color.White)
+    }
+
 }
