@@ -97,7 +97,7 @@ fun DatePicker(date: Date) {
         )
     }
 
-    val mDate = SimpleDateFormat("yyyyMMdd").format(date)
+    val mDate = SimpleDateFormat("yyyy/MM/dd").format(date)
     Button(onClick = {
         mDatePickerDialog?.show()
     }, colors = ButtonDefaults.buttonColors(backgroundColor = Color(0XFF0F9D58))) {

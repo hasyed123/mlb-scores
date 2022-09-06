@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.mlbscores.app.model.Scoreboard
+import com.example.mlbscores.app.model.api.Scoreboard
 import com.example.mlbscores.network.ScoresAPI
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
