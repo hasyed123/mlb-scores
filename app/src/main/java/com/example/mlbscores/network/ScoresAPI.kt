@@ -10,7 +10,7 @@ interface ScoresAPI {
     @GET("/apis/site/v2/sports/baseball/mlb/scoreboard")
     suspend fun getScoreboard(
         @Query("dates")
-        date: String? = ""
+        date: String? = null
     ): Response<Scoreboard>
 
 
