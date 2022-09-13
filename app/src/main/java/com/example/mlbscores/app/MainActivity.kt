@@ -23,7 +23,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
+import com.example.mlbscores.app.model.main.Score
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -34,6 +37,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel.init()
+        viewModel.startTracking()
         setContent {
             Screen()
         }
@@ -46,6 +50,7 @@ fun Screen() {
     val viewModel: MainViewModel = viewModel()
     val scoreboard = viewModel.scoreboard.observeAsState()
     val date = viewModel.date.observeAsState()
+    val liveScores = viewModel.liveScores.observeAsState()
 
     LazyColumn {
         item {
@@ -56,27 +61,44 @@ fun Screen() {
         items(events.orEmpty()) { event ->
             val logo1 = event.competitions[0].competitors[0].team.logo
             val logo2 = event.competitions[0].competitors[1].team.logo
-            Column {
-                Text(
-                    text = event.name,
-                    style = TextStyle(
-                        fontSize = 20.sp
-                    ),
-                    modifier = Modifier
-                        .padding(4.dp)
-                )
+            val score: Score? = when(viewModel.isCurrentDate()) {
+                true -> {
+                    liveScores.value?.get(event.id)
+                }
+                else -> {
+                    Score(
+                        team1 = event.competitions[0].competitors[0].score,
+                        team2 = event.competitions[0].competitors[1].score
+                    )
+                }
+            }
 
-                Row {
+            Row {
+
+                Column {
                     Image(
                         painter = rememberAsyncImagePainter(logo1),
                         contentDescription = null,
                         modifier = Modifier.size(128.dp)
                     )
+                    score?.let {
+                        Text(
+                            text = it.team1
+                        )
+                    }
+                }
+
+                Column {
                     Image(
                         painter = rememberAsyncImagePainter(logo2),
                         contentDescription = null,
                         modifier = Modifier.size(128.dp)
                     )
+                    score?.let {
+                        Text(
+                            text = it.team2
+                        )
+                    }
                 }
             }
         }
