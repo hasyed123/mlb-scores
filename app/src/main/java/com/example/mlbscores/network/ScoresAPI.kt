@@ -1,6 +1,6 @@
 package com.example.mlbscores.network
 
-import com.example.mlbscores.app.model.Scoreboard
+import com.example.mlbscores.app.model.api.Scoreboard
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query
