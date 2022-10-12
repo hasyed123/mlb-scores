@@ -14,7 +14,7 @@ data class Competition(
     val notes: List<Note>,
     val outsText: String,
     val recent: Boolean,
-    val situation: Situation,
+    val situation: Situation?,
     val startDate: String,
     val status: Status,
     val timeValid: Boolean,
