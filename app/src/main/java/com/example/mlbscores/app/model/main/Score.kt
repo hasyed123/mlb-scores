@@ -3,8 +3,11 @@ package com.example.mlbscores.app.model.main
 data class Score(
     val team1: String,
     val team2: String,
-    val runners: Runners?,
-    val inning: Int,
     val completed: Boolean,
-    val topBottom: InningStatus
+    val inning: Int?,
+    val runners: Runners?,
+    val topBottom: InningStatus?,
+    val balls: Int?,
+    val strikes: Int?,
+    val outs: Int?
     )
