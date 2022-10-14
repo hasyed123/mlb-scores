@@ -51,17 +51,20 @@ class MainViewModel @Inject constructor(private val scoresAPI: ScoresAPI) : View
                 val newScore = Score(
                     team1 = it.competitions[0].competitors[0].score,
                     team2 = it.competitions[0].competitors[1].score,
+                    completed = it.status.type.completed,
+                    inning = it.status.period,
                     runners = Runners(
                         first = it.competitions[0].situation?.onFirst ?: false,
                         second = it.competitions[0].situation?.onSecond ?: false,
                         third = it.competitions[0].situation?.onThird ?: false
                     ),
-                    inning = it.status.period,
-                    completed = it.status.type.completed,
                     topBottom = when(it.status.type.detail.contains("Top")) {
                         true -> InningStatus.TOP
                         else -> InningStatus.BOTTOM
-                    }
+                    },
+                    balls = it.competitions[0].situation?.balls,
+                    strikes = it.competitions[0].situation?.strikes,
+                    outs = it.competitions[0].situation?.outs
                 )
                 listOfScores[it.id] = newScore
             }
